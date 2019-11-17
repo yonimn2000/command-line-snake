@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>YonatanMankovich.SnakeGameCore</AssemblyName>
+    <RootNamespace>YonatanMankovich.SnakeGameCore</RootNamespace>
+    <Copyright>Copyright ©  2019 Yonatan Mankovich</Copyright>
+  </PropertyGroup>
+
+</Project>
