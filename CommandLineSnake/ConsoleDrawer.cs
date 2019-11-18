@@ -8,6 +8,7 @@ namespace YonatanMankovich.CommandLineSnake
     {
         public static void DrawBoard(GameController gameController)
         {
+            Console.CursorVisible = false;
             for (int y = 0; y < gameController.BoardSize.Height; y++)
             {
                 for (int x = 0; x < gameController.BoardSize.Width; x++)

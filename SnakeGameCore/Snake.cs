@@ -5,25 +5,26 @@ namespace YonatanMankovich.SnakeGameCore
 {
     public class Snake
     {
-        public Direction Direction { get; set; }
+        public Directions Direction { get; internal set; }
+
         public List<Point> History { get; } = new List<Point>();
 
-        public Snake(Point head, Direction direction)
+        public Snake(Point head, Directions direction)
         {
             History.Add(head);
             Direction = direction;
         }
-        
+
         public Point GetNextPoint()
         {
             Point nextPoint;
             Point head = GetHead();
             switch (Direction)
             {
-                case Direction.Up: nextPoint = new Point(head.X, head.Y - 1); break;
-                case Direction.Down: nextPoint = new Point(head.X, head.Y + 1); break;
-                case Direction.Left: nextPoint = new Point(head.X - 1, head.Y); break;
-                case Direction.Right: nextPoint = new Point(head.X + 1, head.Y); break;
+                case Directions.Up: nextPoint = new Point(head.X, head.Y - 1); break;
+                case Directions.Down: nextPoint = new Point(head.X, head.Y + 1); break;
+                case Directions.Left: nextPoint = new Point(head.X - 1, head.Y); break;
+                case Directions.Right: nextPoint = new Point(head.X + 1, head.Y); break;
             }
             return nextPoint;
         }

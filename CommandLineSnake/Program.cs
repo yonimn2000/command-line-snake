@@ -6,12 +6,41 @@ namespace YonatanMankovich.CommandLineSnake
 {
     class Program
     {
+        static GameController gameController;
+
         static void Main(string[] args)
         {
-            GameController gameController = new GameController(new Size(10, 10));
+            gameController = new GameController(new Size(15, 15));
+            gameController.OnStepMade += GameController_OnStepMade;
             gameController.StartGame();
-            ConsoleDrawer.DrawBoard(gameController);
+            while (gameController.IsGameGoing())
+            {
+                ConsoleKey key = Console.ReadKey().Key;
+                switch (key)
+                {
+                    case ConsoleKey.Spacebar: gameController.PauseGame(); break; // TODO
+                    case ConsoleKey.LeftArrow: gameController.SetNextSnakeDirection(Directions.Left); break;
+                    case ConsoleKey.UpArrow: gameController.SetNextSnakeDirection(Directions.Up); break;
+                    case ConsoleKey.RightArrow: gameController.SetNextSnakeDirection(Directions.Right); break;
+                    case ConsoleKey.DownArrow: gameController.SetNextSnakeDirection(Directions.Down); break;
+                }
+            }
             Console.ReadLine();
+        }
+
+        private static void GameController_OnStepMade(object sender, StepMadeEventArgs e)
+        {
+            if (e.StepMadeKind == StepMadeKinds.HitWall || e.StepMadeKind == StepMadeKinds.HitSnake)
+            {
+                gameController.InitializeGame();
+                gameController.StartGame();
+            }
+            else
+            {
+                Console.Clear();
+                ConsoleDrawer.DrawBoard(gameController);
+                Console.WriteLine(e.StepMadeKind);
+            }
         }
     }
 }
