@@ -6,7 +6,7 @@ namespace YonatanMankovich.CommandLineSnake
 {
     public class ConsoleDrawer
     {
-        public static void DrawBoard(GameController gameController)
+        public static void DrawBoard(SnakeGameController gameController)
         {
             Console.CursorVisible = false;
             for (int y = 0; y < gameController.BoardSize.Height; y++)

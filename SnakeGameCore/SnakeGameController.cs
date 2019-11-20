@@ -4,7 +4,7 @@ using System.Timers;
 
 namespace YonatanMankovich.SnakeGameCore
 {
-    public class GameController
+    public class SnakeGameController
     {
         public Size BoardSize { get; set; }
         public Snake Snake { get; private set; }
@@ -12,11 +12,12 @@ namespace YonatanMankovich.SnakeGameCore
 
         private readonly Random random = new Random();
         private readonly Timer timer = new Timer(500);
+        private Directions nextSnakeDirection;
 
         public delegate void StepMadeHandler(object sender, StepMadeEventArgs e);
         public event StepMadeHandler OnStepMade;
 
-        public GameController(Size boardSize)
+        public SnakeGameController(Size boardSize)
         {
             BoardSize = boardSize;
             InitializeGame();
@@ -27,6 +28,7 @@ namespace YonatanMankovich.SnakeGameCore
         {
             Snake = new Snake(new Point(random.Next(BoardSize.Width), random.Next(BoardSize.Height)),
                             (Directions)random.Next(Enum.GetNames(typeof(Directions)).Length));
+            nextSnakeDirection = Snake.Direction;
             CreateAppleOnBoard();
         }
 
@@ -58,8 +60,15 @@ namespace YonatanMankovich.SnakeGameCore
             ApplePoint = newApplePoint;
         }
 
+        public void SetNextSnakeDirection(Directions direction)
+        {
+            if (direction != nextSnakeDirection && ((int)direction - (int)nextSnakeDirection) % 2 != 0) // New direction is not same and not opposite of current.
+                nextSnakeDirection = direction;
+        }
+
         private void MakeStep()
         {
+            Snake.Direction = nextSnakeDirection;
             Point nextSnakePoint = Snake.GetNextPoint();
             StepMadeKinds stepMadeKind = StepMadeKinds.Normal;
             if (IsPointOutOfBounds(nextSnakePoint))
