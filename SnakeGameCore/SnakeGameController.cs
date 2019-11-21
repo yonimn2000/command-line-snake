@@ -9,9 +9,10 @@ namespace YonatanMankovich.SnakeGameCore
         public Size BoardSize { get; set; }
         public Snake Snake { get; private set; }
         public Point ApplePoint { get; private set; }
+        public SnakeBoardDiff SnakeBoardDiff { get; }
 
         private readonly Random random = new Random();
-        private readonly Timer timer = new Timer(500);
+        private readonly Timer timer = new Timer(1);
         private Directions nextSnakeDirection;
 
         public delegate void StepMadeHandler(object sender, StepMadeEventArgs e);
@@ -21,6 +22,7 @@ namespace YonatanMankovich.SnakeGameCore
         {
             BoardSize = boardSize;
             InitializeGame();
+            SnakeBoardDiff = new SnakeBoardDiff(this);
             timer.Elapsed += TimerTick;
         }
 
@@ -30,6 +32,7 @@ namespace YonatanMankovich.SnakeGameCore
                             (Directions)random.Next(Enum.GetNames(typeof(Directions)).Length));
             nextSnakeDirection = Snake.Direction;
             CreateAppleOnBoard();
+            SnakeBoardDiff?.ReadCurrentGameState();
         }
 
         public void StartGame()

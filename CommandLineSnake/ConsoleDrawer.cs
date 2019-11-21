@@ -9,19 +9,23 @@ namespace YonatanMankovich.CommandLineSnake
         public static void DrawBoard(SnakeGameController gameController)
         {
             Console.CursorVisible = false;
-            for (int y = 0; y < gameController.BoardSize.Height; y++)
+            foreach (SnakeBoardChange snakeBoardChange in gameController.SnakeBoardDiff.GetSnakeBoardChanges())
             {
-                for (int x = 0; x < gameController.BoardSize.Width; x++)
+                Console.SetCursorPosition(snakeBoardChange.Point.X * 2, snakeBoardChange.Point.Y);
+                switch (snakeBoardChange.SnakeBoardDiff)
                 {
-                    Console.Write(' ');
-                    if (gameController.Snake.IsPointOnSnake(new Point(x,y)))
-                        Console.Write('X');
-                    else if (new Point(x, y) == gameController.ApplePoint)
-                        Console.Write('O');
-                    else
+                    case SnakeBoardDiffs.AppleRemoved:
+                    case SnakeBoardDiffs.SnakeRemoved:
                         Console.Write(' ');
+                        break;
+                    case SnakeBoardDiffs.SnakeAdded:
+                        Console.Write('X');
+                        break;
+                    case SnakeBoardDiffs.AppleAdded:
+                        Console.Write('O');
+                        break;
                 }
-                Console.WriteLine();
+                Console.Write(' ');
             }
         }
     }
