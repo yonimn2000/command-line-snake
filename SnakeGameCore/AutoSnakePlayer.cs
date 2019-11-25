@@ -1,17 +1,51 @@
-﻿namespace YonatanMankovich.SnakeGameCore
+﻿using System.Collections.Generic;
+using System.Drawing;
+using YonatanMankovich.PathStar;
+
+namespace YonatanMankovich.SnakeGameCore
 {
-    public static class AutoSnakePlayer
+    public class AutoSnakePlayer
     {
-        public static Directions GetNextDirection(SnakeGameController gameController)
+        public SnakeGameController SnakeGameController { get; private set; }
+        public Queue<Point> Path { get; private set; }
+        private GridAstar PathFinder { get; set; }
+
+        public AutoSnakePlayer(SnakeGameController snakeGameController)
         {
-            if (gameController.Snake.GetHead().X < gameController.ApplePoint.X)
-                return Directions.Right;
-            else if (gameController.Snake.GetHead().X > gameController.ApplePoint.X)
-                return Directions.Left;
-            else if (gameController.Snake.GetHead().Y < gameController.ApplePoint.Y)
-                return Directions.Down;
-            else //if (gameController.Snake.GetHead().Y > gameController.ApplePoint.Y)
-                return Directions.Up;
+            SnakeGameController = snakeGameController;
+        }
+
+        public void ReCalculatePath()
+        {
+            try
+            {
+                PathFinder = new GridAstar(SnakeGameController.BoardSize, SnakeGameController.Snake.GetNextPoint(),
+                SnakeGameController.ApplePoint, SnakeGameController.Snake.History);
+                PathFinder.FindPath();
+                PathFinder.Path.Reverse();
+                Path = new Queue<Point>(PathFinder.Path);
+            }
+            catch (System.Exception)
+            {
+                //No solution or other
+            }
+        }
+
+        public Directions GetNextDirection()
+        {
+            if (Path.Count > 0)
+            {
+                Point nextPoint = Path.Dequeue();
+                if (SnakeGameController.Snake.GetHead().X < nextPoint.X)
+                    return Directions.Right;
+                else if (SnakeGameController.Snake.GetHead().X > nextPoint.X)
+                    return Directions.Left;
+                else if (SnakeGameController.Snake.GetHead().Y < nextPoint.Y)
+                    return Directions.Down;
+                else if (SnakeGameController.Snake.GetHead().Y > nextPoint.Y)
+                    return Directions.Up;
+            }
+            return SnakeGameController.Snake.Direction;
         }
     }
 }

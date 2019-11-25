@@ -10,7 +10,7 @@ namespace YonatanMankovich.CommandLineSnake
 
         static void Main(string[] args)
         {
-            gameController = new SnakeGameController(new Size(50, 50));
+            gameController = new SnakeGameController(new Size(30, 20));
             gameController.OnStepMade += GameController_OnStepMade;
             gameController.StartGame();
             while (gameController.IsGameGoing())
@@ -40,7 +40,7 @@ namespace YonatanMankovich.CommandLineSnake
             {
                 ConsoleDrawer.DrawBoard(gameController);
                 //Console.WriteLine(e.StepMadeKind);
-                gameController.SetNextSnakeDirection(AutoSnakePlayer.GetNextDirection(gameController));
+                gameController.SetNextSnakeDirection(gameController.GetNextCalculatedDirection());
             }
         }
     }

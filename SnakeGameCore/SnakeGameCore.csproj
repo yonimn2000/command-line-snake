@@ -7,4 +7,10 @@
     <Copyright>Copyright ©  2019 Yonatan Mankovich</Copyright>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="YonatanMankovich.PathStar">
+      <HintPath>..\..\..\Libraries\PathStar\PathStar\bin\Debug\netstandard2.0\YonatanMankovich.PathStar.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

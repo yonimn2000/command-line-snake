@@ -12,7 +12,12 @@ namespace YonatanMankovich.SnakeGameCore
         public SnakeBoardDiff(SnakeGameController snakeGameController)
         {
             this.snakeGameController = snakeGameController;
-            ReadCurrentGameState();
+            Reset();
+        }
+
+        public void Reset()
+        {
+            lastSnakePoints = new List<Point>();
         }
 
         public void ReadCurrentGameState()
@@ -24,15 +29,24 @@ namespace YonatanMankovich.SnakeGameCore
         public List<SnakeBoardChange> GetSnakeBoardChanges()
         {
             List<SnakeBoardChange> snakeBoardChanges = new List<SnakeBoardChange>();
-            if (snakeGameController.ApplePoint != lastApplePoint)
+            
+            if (lastSnakePoints.Count > 0) // If not the first frame.
             {
-                snakeBoardChanges.Add(new SnakeBoardChange(lastApplePoint, SnakeBoardDiffs.AppleRemoved));
-                snakeBoardChanges.Add(new SnakeBoardChange(snakeGameController.ApplePoint, SnakeBoardDiffs.AppleAdded));
+                if (snakeGameController.ApplePoint != lastApplePoint)
+                {
+                    snakeBoardChanges.Add(new SnakeBoardChange(lastApplePoint, SnakeBoardDiffs.AppleRemoved));
+                    snakeBoardChanges.Add(new SnakeBoardChange(snakeGameController.ApplePoint, SnakeBoardDiffs.AppleAdded));
+                }
+                if (lastSnakePoints[lastSnakePoints.Count - 1] != snakeGameController.Snake.GetHead()) // If head changed.
+                    snakeBoardChanges.Add(new SnakeBoardChange(snakeGameController.Snake.GetHead(), SnakeBoardDiffs.SnakeAdded));
+                if (lastSnakePoints[0] != snakeGameController.Snake.History[0]) // If tail changed.
+                    snakeBoardChanges.Add(new SnakeBoardChange(lastSnakePoints[0], SnakeBoardDiffs.SnakeRemoved)); 
             }
-            if (lastSnakePoints[lastSnakePoints.Count - 1] != snakeGameController.Snake.GetHead()) // If head changed.
+            else
+            {
+                snakeBoardChanges.Add(new SnakeBoardChange(snakeGameController.ApplePoint, SnakeBoardDiffs.AppleAdded));
                 snakeBoardChanges.Add(new SnakeBoardChange(snakeGameController.Snake.GetHead(), SnakeBoardDiffs.SnakeAdded));
-            if (lastSnakePoints[0] != snakeGameController.Snake.History[0]) // If tail changed.
-                snakeBoardChanges.Add(new SnakeBoardChange(lastSnakePoints[0], SnakeBoardDiffs.SnakeRemoved));
+            }
             ReadCurrentGameState();
             return snakeBoardChanges;
         }

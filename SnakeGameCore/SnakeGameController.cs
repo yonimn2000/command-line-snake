@@ -10,9 +10,11 @@ namespace YonatanMankovich.SnakeGameCore
         public Snake Snake { get; private set; }
         public Point ApplePoint { get; private set; }
         public SnakeBoardDiff SnakeBoardDiff { get; }
+        public AutoSnakePlayer AutoSnakePlayer { get; }
+
 
         private readonly Random random = new Random();
-        private readonly Timer timer = new Timer(1);
+        private readonly Timer timer = new Timer(10);
         private Directions nextSnakeDirection;
 
         public delegate void StepMadeHandler(object sender, StepMadeEventArgs e);
@@ -21,8 +23,13 @@ namespace YonatanMankovich.SnakeGameCore
         public SnakeGameController(Size boardSize)
         {
             BoardSize = boardSize;
-            InitializeGame();
+            Snake = new Snake(new Point(random.Next(BoardSize.Width), random.Next(BoardSize.Height)),
+                            (Directions)random.Next(Enum.GetNames(typeof(Directions)).Length));
+            nextSnakeDirection = Snake.Direction;
             SnakeBoardDiff = new SnakeBoardDiff(this);
+            AutoSnakePlayer = new AutoSnakePlayer(this);
+            CreateAppleOnBoard();
+            
             timer.Elapsed += TimerTick;
         }
 
@@ -32,7 +39,7 @@ namespace YonatanMankovich.SnakeGameCore
                             (Directions)random.Next(Enum.GetNames(typeof(Directions)).Length));
             nextSnakeDirection = Snake.Direction;
             CreateAppleOnBoard();
-            SnakeBoardDiff?.ReadCurrentGameState();
+            //SnakeBoardDiff.ReadCurrentGameState();
         }
 
         public void StartGame()
@@ -55,12 +62,18 @@ namespace YonatanMankovich.SnakeGameCore
             return timer.Enabled;
         }
 
+        public Directions GetNextCalculatedDirection()
+        {
+            return AutoSnakePlayer.GetNextDirection();
+        }
+
         private void CreateAppleOnBoard()
         {
             Point newApplePoint;
-            do newApplePoint = new Point(random.Next(BoardSize.Width), random.Next(BoardSize.Height));
+            do newApplePoint = new Point(random.Next(BoardSize.Width-2)+1, random.Next(BoardSize.Height-2)+1);//TODO Remove +-12
             while (Snake.IsPointOnSnake(newApplePoint));
             ApplePoint = newApplePoint;
+            AutoSnakePlayer.ReCalculatePath();
         }
 
         public void SetNextSnakeDirection(Directions direction)
@@ -77,12 +90,12 @@ namespace YonatanMankovich.SnakeGameCore
             if (IsPointOutOfBounds(nextSnakePoint))
             {
                 stepMadeKind = StepMadeKinds.HitWall;
-                timer.Stop();
+                EndGame();
             }
             else if (Snake.IsPointOnSnake(nextSnakePoint))
             {
                 stepMadeKind = StepMadeKinds.HitSnake;
-                timer.Stop();
+                EndGame();
             }
             Snake.History.Add(nextSnakePoint);
             if (nextSnakePoint == ApplePoint)
@@ -93,6 +106,12 @@ namespace YonatanMankovich.SnakeGameCore
             else
                 Snake.History.RemoveAt(0);
             OnStepMade?.Invoke(this, new StepMadeEventArgs(stepMadeKind)); // FIXME
+        }
+
+        public void EndGame()
+        {
+            timer.Stop();
+            SnakeBoardDiff.Reset();
         }
 
         private bool IsPointOutOfBounds(Point point)

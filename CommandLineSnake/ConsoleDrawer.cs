@@ -9,6 +9,11 @@ namespace YonatanMankovich.CommandLineSnake
         public static void DrawBoard(SnakeGameController gameController)
         {
             Console.CursorVisible = false;
+            /*foreach (Point pathPoint in gameController.AutoSnakePlayer.Path)
+            {
+                Console.SetCursorPosition(pathPoint.X * 2, pathPoint.Y);
+                Console.Write("P ");
+            }*/
             foreach (SnakeBoardChange snakeBoardChange in gameController.SnakeBoardDiff.GetSnakeBoardChanges())
             {
                 Console.SetCursorPosition(snakeBoardChange.Point.X * 2, snakeBoardChange.Point.Y);
