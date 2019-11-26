@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using YonatanMankovich.PathStar;
 
@@ -22,12 +23,11 @@ namespace YonatanMankovich.SnakeGameCore
                 PathFinder = new GridAstar(SnakeGameController.BoardSize, SnakeGameController.Snake.GetNextPoint(),
                 SnakeGameController.ApplePoint, SnakeGameController.Snake.History);
                 PathFinder.FindPath();
-                PathFinder.Path.Reverse();
                 Path = new Queue<Point>(PathFinder.Path);
             }
-            catch (System.Exception)
+            catch (Exception e)
             {
-                //No solution or other
+                System.Diagnostics.Debug.WriteLine(e.Message);
             }
         }
 

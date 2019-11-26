@@ -14,7 +14,7 @@ namespace YonatanMankovich.SnakeGameCore
 
 
         private readonly Random random = new Random();
-        private readonly Timer timer = new Timer(10);
+        private readonly Timer timer = new Timer(200);
         private Directions nextSnakeDirection;
 
         public delegate void StepMadeHandler(object sender, StepMadeEventArgs e);
