@@ -12,6 +12,7 @@ namespace YonatanMankovich.CommandLineSnake
 
         static void Main(string[] args)
         {
+            Console.Title = "Yonatan's Command Line Snake Game";
             StartAgain();
         }
 
@@ -28,7 +29,7 @@ namespace YonatanMankovich.CommandLineSnake
         private static void PlayGame()
         {
             Console.Clear();
-            gameController = new SnakeGameController(new Size(30, 20));
+            gameController = new SnakeGameController(new Size(10, 10));
             gameController.OnStepMade += GameController_OnStepMade;
             gameController.StartGame();
             while (gameController.IsGameGoing() && !isAuto)
@@ -36,7 +37,12 @@ namespace YonatanMankovich.CommandLineSnake
                 ConsoleKey key = Console.ReadKey().Key;
                 switch (key)
                 {
-                    case ConsoleKey.Spacebar: gameController.PauseGame(); break; // TODO
+                    case ConsoleKey.Spacebar:
+                        if (!gameController.IsGamePaused)
+                            gameController.PauseGame();
+                        else
+                            gameController.StartGame();
+                        break;
                     case ConsoleKey.LeftArrow: gameController.SetNextSnakeDirection(Directions.Left); break;
                     case ConsoleKey.UpArrow: gameController.SetNextSnakeDirection(Directions.Up); break;
                     case ConsoleKey.RightArrow: gameController.SetNextSnakeDirection(Directions.Right); break;
@@ -55,10 +61,10 @@ namespace YonatanMankovich.CommandLineSnake
             }
             else
             {
-                ConsoleDrawer.DrawBoard(gameController);
-                //Console.WriteLine(e.StepMadeKind);
-                if(isAuto)
-                gameController.SetNextSnakeDirection(gameController.GetNextCalculatedDirection());
+                ConsoleDrawer.DrawBoard(gameController, new Point(0, 0));
+                Console.WriteLine("Size: " + gameController.Snake.History.Count);
+                if (isAuto)
+                    gameController.SetNextSnakeDirection(gameController.GetNextCalculatedDirection());
             }
         }
     }
