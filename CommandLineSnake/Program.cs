@@ -8,6 +8,7 @@ namespace YonatanMankovich.CommandLineSnake
     class Program
     {
         static SnakeGameController gameController;
+        static AutoSnakePlayer autoSnakePlayer;
         static bool isAuto = false;
 
         static void Main(string[] args)
@@ -30,8 +31,11 @@ namespace YonatanMankovich.CommandLineSnake
         {
             Console.Clear();
             gameController = new SnakeGameController(new Size(10, 10));
-            gameController.OnStepMade += GameController_OnStepMade;
+            autoSnakePlayer = new AutoSnakePlayer(gameController);
+            gameController.OnStepMade += GameController_AfterStepMade;
+            gameController.BeforeStepMadeDelegate += GameController_BeforeStepMade;
             gameController.StartGame();
+            //ConsoleDrawer.DrawBoard(gameController, new Point(0, 0), autoSnakePlayer);
             while (gameController.IsGameGoing() && !isAuto)
             {
                 ConsoleKey key = Console.ReadKey().Key;
@@ -51,9 +55,17 @@ namespace YonatanMankovich.CommandLineSnake
             }
         }
 
-        private static void GameController_OnStepMade(object sender, StepMadeEventArgs e)
+        private static void GameController_BeforeStepMade()
         {
-            if (e.StepMadeKind == StepMadeKinds.HitWall || e.StepMadeKind == StepMadeKinds.HitSnake)
+            if (isAuto)
+                gameController.SetNextSnakeDirection(autoSnakePlayer.GetNextDirection());
+        }
+
+        private static void GameController_AfterStepMade(StepMadeKinds stepMadeKind)
+        {
+            if (stepMadeKind != StepMadeKinds.Normal)
+                autoSnakePlayer.TryRecalculatingPath();
+            if (stepMadeKind == StepMadeKinds.HitWall || stepMadeKind == StepMadeKinds.HitSnake)
             {
                 gameController.InitializeGame();
                 gameController.StartGame();
@@ -61,10 +73,8 @@ namespace YonatanMankovich.CommandLineSnake
             }
             else
             {
-                ConsoleDrawer.DrawBoard(gameController, new Point(0, 0));
+                ConsoleDrawer.DrawBoard(gameController, new Point(0, 0), autoSnakePlayer);
                 Console.WriteLine("Size: " + gameController.Snake.History.Count);
-                if (isAuto)
-                    gameController.SetNextSnakeDirection(gameController.GetNextCalculatedDirection());
             }
         }
     }

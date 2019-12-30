@@ -6,11 +6,12 @@ namespace YonatanMankovich.CommandLineSnake
 {
     public class ConsoleDrawer
     {
-        public static void DrawBoard(SnakeGameController gameController, Point point)
+        public static void DrawBoard(SnakeGameController gameController, Point point, AutoSnakePlayer autoSnakePlayer)
         {
             Console.CursorVisible = false;
             DrawBorder(gameController.BoardSize, point);
-            foreach (SnakeBoardChange snakeBoardChange in gameController.SnakeBoardDiff.GetSnakeBoardChanges())
+
+            /*foreach (SnakeBoardChange snakeBoardChange in gameController.SnakeBoardDiff.GetSnakeBoardChanges())
             {
                 Console.SetCursorPosition(point.X * 2 + snakeBoardChange.Point.X * 2 + 2, point.Y + snakeBoardChange.Point.Y + 1);
                 switch (snakeBoardChange.SnakeBoardDiff)
@@ -19,21 +20,39 @@ namespace YonatanMankovich.CommandLineSnake
                     case SnakeBoardDiffs.SnakeRemoved: Draw(Console.BackgroundColor); break;
                     case SnakeBoardDiffs.SnakeAdded: Draw(ConsoleColor.Yellow); break;
                     case SnakeBoardDiffs.AppleAdded:
-                        //DrawPathToApple();
                         Draw(ConsoleColor.Red);
                         break;
                 }
+            }*/
+
+            //------------Temp
+            Console.SetCursorPosition(point.X * 2 + 2, point.Y + 1);
+            for (int y = 0; y <= gameController.BoardSize.Height; y++)
+            {
+                for (int x = 0; x < gameController.BoardSize.Width; x++)
+                    Console.Write("  ");
+                Console.SetCursorPosition(point.X * 2 + 2, point.Y + 1 + y);
             }
-            Console.SetCursorPosition(point.X * 2, point.Y + gameController.BoardSize.Height +2);
+            DrawPathToApple();
+            Console.SetCursorPosition(gameController.ApplePoint.X * 2 +2, gameController.ApplePoint.Y+1);
+            Draw(ConsoleColor.Red);
+            foreach (Point snakePoint in gameController.Snake.History)
+            {
+                Console.SetCursorPosition(snakePoint.X * 2+2, snakePoint.Y+1);
+                Draw(ConsoleColor.Yellow);
+            }
+            //-------------------
+
+            Console.SetCursorPosition(point.X * 2, point.Y + gameController.BoardSize.Height + 2);
 
             void DrawPathToApple() //TODO: Remove
             {
-                foreach (Point pathPoint in gameController.AutoSnakePlayer.Path)
+                foreach (Point pathPoint in autoSnakePlayer.Path)
                 {
                     Console.SetCursorPosition(point.X * 2 + pathPoint.X * 2 + 2, point.Y + pathPoint.Y + 1);
                     Draw(ConsoleColor.Cyan);
                 }
-                Console.CursorLeft -= 2;
+                //Console.CursorLeft -= 2;
             }
         }
 
@@ -42,7 +61,7 @@ namespace YonatanMankovich.CommandLineSnake
             Point cursorStart = new Point(Console.CursorLeft, Console.CursorTop);
             Console.SetCursorPosition(point.X * 2, point.Y);
             ConsoleColor prevColor = Console.BackgroundColor;
-            Console.BackgroundColor = ConsoleColor.Gray;
+            Console.BackgroundColor = ConsoleColor.DarkGray;
 
             for (int x = point.X; x < point.X + boardSize.Width + 2; x++)
                 Console.Write("  ");

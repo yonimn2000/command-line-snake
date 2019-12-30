@@ -14,6 +14,7 @@ namespace YonatanMankovich.SnakeGameCore
         public AutoSnakePlayer(SnakeGameController snakeGameController)
         {
             SnakeGameController = snakeGameController;
+            TryRecalculatingPath();
         }
 
         public void TryRecalculatingPath()
@@ -25,13 +26,20 @@ namespace YonatanMankovich.SnakeGameCore
                 SnakeGameController.ApplePoint, SnakeGameController.Snake.History);
                 PathFinder.FindPath();
                 Path = new Queue<Point>(PathFinder.Path);
+                System.Diagnostics.Debug.WriteLine(string.Join(", ", Path)); // TODO: Remove
             }
+            /*PathFinder = new GridAstar(SnakeGameController.BoardSize, SnakeGameController.Snake.GetHead(),
+                SnakeGameController.ApplePoint, SnakeGameController.Snake.History);
+            PathFinder.FindPath();
+            Path = new Queue<Point>(PathFinder.Path);
+            System.Diagnostics.Debug.WriteLine(string.Join(", ", Path)); // TODO: Remove*/
         }
 
         public Directions GetNextDirection()
         {
             if (Path.Count > 0)
             {
+                System.Diagnostics.Debug.WriteLine(Path.Count + Path.Peek().ToString()); // TODO: Remove
                 Point nextPoint = Path.Dequeue();
                 if (SnakeGameController.Snake.GetHead().X < nextPoint.X)
                     return Directions.Right;
@@ -41,7 +49,7 @@ namespace YonatanMankovich.SnakeGameCore
                     return Directions.Down;
                 else if (SnakeGameController.Snake.GetHead().Y > nextPoint.Y)
                     return Directions.Up;
-                return SnakeGameController.Snake.Direction; // Continue in the same direction.
+                //return SnakeGameController.Snake.Direction; // Continue in the same direction.
             }
             TryRecalculatingPath();
             return GetNextRandomPossibleDirection(); // If could not calculate path...

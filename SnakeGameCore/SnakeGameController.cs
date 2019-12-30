@@ -10,7 +10,6 @@ namespace YonatanMankovich.SnakeGameCore
         public Snake Snake { get; private set; }
         public Point ApplePoint { get; private set; }
         public SnakeBoardDiff SnakeBoardDiff { get; }
-        public AutoSnakePlayer AutoSnakePlayer { get; }
         public bool IsGamePaused { get; private set; } = false;
 
         public double Interval
@@ -20,11 +19,14 @@ namespace YonatanMankovich.SnakeGameCore
         }
 
         private readonly Random random = new Random();
-        private readonly Timer timer = new Timer(200);
+        private readonly Timer timer = new Timer(100);
         private Directions nextSnakeDirection;
 
-        public delegate void StepMadeHandler(object sender, StepMadeEventArgs e);
-        public event StepMadeHandler OnStepMade;
+        public BeforeStepMade BeforeStepMadeDelegate;
+        public AfterStepMade OnStepMade;
+
+        public delegate void BeforeStepMade();
+        public delegate void AfterStepMade(StepMadeKinds stepMadeKind);
 
         public SnakeGameController(Size boardSize)
         {
@@ -33,7 +35,6 @@ namespace YonatanMankovich.SnakeGameCore
                             (Directions)random.Next(Enum.GetNames(typeof(Directions)).Length));
             nextSnakeDirection = Snake.Direction;
             SnakeBoardDiff = new SnakeBoardDiff(this);
-            AutoSnakePlayer = new AutoSnakePlayer(this);
             CreateAppleOnBoard();
 
             timer.Elapsed += TimerTick;
@@ -69,18 +70,12 @@ namespace YonatanMankovich.SnakeGameCore
             return timer.Enabled || IsGamePaused;
         }
 
-        public Directions GetNextCalculatedDirection()
-        {
-            return AutoSnakePlayer.GetNextDirection();
-        }
-
         private void CreateAppleOnBoard()
         {
             Point newApplePoint;
             do newApplePoint = new Point(random.Next(BoardSize.Width), random.Next(BoardSize.Height));
             while (Snake.IsPointOnSnake(newApplePoint));
             ApplePoint = newApplePoint;
-            AutoSnakePlayer.TryRecalculatingPath();
         }
 
         public void SetNextSnakeDirection(Directions direction)
@@ -92,6 +87,7 @@ namespace YonatanMankovich.SnakeGameCore
 
         private void MakeStep()
         {
+            BeforeStepMadeDelegate?.Invoke();
             Snake.Direction = nextSnakeDirection;
             Point nextSnakePoint = Snake.GetNextPoint();
             StepMadeKinds stepMadeKind = StepMadeKinds.Normal;
@@ -113,7 +109,7 @@ namespace YonatanMankovich.SnakeGameCore
             }
             else
                 Snake.History.RemoveAt(0);
-            OnStepMade?.Invoke(this, new StepMadeEventArgs(stepMadeKind));
+            OnStepMade?.Invoke(stepMadeKind);
         }
 
         public void EndGame()
