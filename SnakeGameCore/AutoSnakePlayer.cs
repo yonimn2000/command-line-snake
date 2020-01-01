@@ -7,9 +7,8 @@ namespace YonatanMankovich.SnakeGameCore
 {
     public class AutoSnakePlayer
     {
-        public SnakeGameController SnakeGameController { get; private set; }
-        public Queue<Point> Path { get; private set; } = new Queue<Point>();
-        private IGridAstar PathFinder { get; set; }
+        public SnakeGameController SnakeGameController { get; }
+        public List<Point> Path { get; private set; } = new List<Point>();
 
         public AutoSnakePlayer(SnakeGameController snakeGameController)
         {
@@ -17,30 +16,30 @@ namespace YonatanMankovich.SnakeGameCore
             TryRecalculatingPath();
         }
 
+        public void SetNextSnakeDirection()
+        {
+            SnakeGameController.SetNextSnakeDirection(GetNextDirection());
+        }
+
         public void TryRecalculatingPath()
         {
-            Point nextSnakePoint = SnakeGameController.Snake.GetNextPoint();
-            if (IsPossibleNextPoint(nextSnakePoint))
+            Path.Clear();
+            try
             {
-                PathFinder = new GridAstar(SnakeGameController.BoardSize, nextSnakePoint,
+                IGridAstar PathFinder = new GridAstar(SnakeGameController.BoardSize, SnakeGameController.Snake.GetHead(),
                 SnakeGameController.ApplePoint, SnakeGameController.Snake.History);
                 PathFinder.FindPath();
-                Path = new Queue<Point>(PathFinder.Path);
-                System.Diagnostics.Debug.WriteLine(string.Join(", ", Path)); // TODO: Remove
+                Path = PathFinder.Path;
             }
-            /*PathFinder = new GridAstar(SnakeGameController.BoardSize, SnakeGameController.Snake.GetHead(),
-                SnakeGameController.ApplePoint, SnakeGameController.Snake.History);
-            PathFinder.FindPath();
-            Path = new Queue<Point>(PathFinder.Path);
-            System.Diagnostics.Debug.WriteLine(string.Join(", ", Path)); // TODO: Remove*/
+            catch (Exception e) when (e is PathNotFoundException || e is PointOutsideOfGridException) { } // Ignore exceptions
         }
 
         public Directions GetNextDirection()
         {
+            TryRecalculatingPath();
             if (Path.Count > 0)
             {
-                System.Diagnostics.Debug.WriteLine(Path.Count + Path.Peek().ToString()); // TODO: Remove
-                Point nextPoint = Path.Dequeue();
+                Point nextPoint = Path[1];
                 if (SnakeGameController.Snake.GetHead().X < nextPoint.X)
                     return Directions.Right;
                 else if (SnakeGameController.Snake.GetHead().X > nextPoint.X)
@@ -49,13 +48,11 @@ namespace YonatanMankovich.SnakeGameCore
                     return Directions.Down;
                 else if (SnakeGameController.Snake.GetHead().Y > nextPoint.Y)
                     return Directions.Up;
-                //return SnakeGameController.Snake.Direction; // Continue in the same direction.
             }
-            TryRecalculatingPath();
             return GetNextRandomPossibleDirection(); // If could not calculate path...
         }
 
-        private Directions GetNextRandomPossibleDirection()
+        public Directions GetNextRandomPossibleDirection()
         {
             List<Directions> nextPossibleDirections = new List<Directions>(4);
             Point snakeHead = SnakeGameController.Snake.GetHead();
@@ -72,7 +69,6 @@ namespace YonatanMankovich.SnakeGameCore
             if (nextPossibleDirections.Count > 0)
                 return nextPossibleDirections[new Random().Next(nextPossibleDirections.Count)];
             return SnakeGameController.Snake.Direction; // Continue in the same direction (give up).
-
         }
 
         private bool IsPossibleNextPoint(Point point)
