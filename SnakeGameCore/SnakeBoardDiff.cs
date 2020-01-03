@@ -5,62 +5,60 @@ namespace YonatanMankovich.SnakeGameCore
 {
     public class SnakeBoardDiff
     {
-        private Point lastApplePoint;
-        private List<Point> lastSnakePoints;
-        private SnakeGameController snakeGameController;
+        private SnakeGameController SnakeGameController { get; }
+        private Point LastApplePoint { get; set; }
+        private List<Point> LastSnakePoints { get; set; }
 
         public SnakeBoardDiff(SnakeGameController snakeGameController)
         {
-            this.snakeGameController = snakeGameController;
+            SnakeGameController = snakeGameController;
             Reset();
         }
 
         public void Reset()
         {
-            lastSnakePoints = new List<Point>();
+            LastApplePoint = new Point(-1, -1);
+            LastSnakePoints = new List<Point>();
         }
 
         public void ReadCurrentGameState()
         {
-            lastApplePoint = snakeGameController.ApplePoint;
-            lastSnakePoints = new List<Point>(snakeGameController.Snake.History);
+            LastApplePoint = SnakeGameController.ApplePoint;
+            LastSnakePoints = new List<Point>(SnakeGameController.Snake.History);
         }
 
         public List<SnakeBoardChange> GetSnakeBoardChanges()
         {
             List<SnakeBoardChange> snakeBoardChanges = new List<SnakeBoardChange>();
-            
-            if (lastSnakePoints.Count > 0) // If not the first frame.
+
+            if (LastSnakePoints.Count > 0) // If not the first frame.
             {
-                if (snakeGameController.ApplePoint != lastApplePoint)
+                if (SnakeGameController.ApplePoint != LastApplePoint)
                 {
-                    snakeBoardChanges.Add(new SnakeBoardChange(lastApplePoint, SnakeBoardDiffs.AppleRemoved));
-                    snakeBoardChanges.Add(new SnakeBoardChange(snakeGameController.ApplePoint, SnakeBoardDiffs.AppleAdded));
+                    snakeBoardChanges.Add(new SnakeBoardChange(LastApplePoint, SnakeBoardDiffs.AppleRemoved));
+                    snakeBoardChanges.Add(new SnakeBoardChange(SnakeGameController.ApplePoint, SnakeBoardDiffs.AppleAdded));
                 }
-                if (lastSnakePoints[lastSnakePoints.Count - 1] != snakeGameController.Snake.GetHead()) // If head changed.
-                    snakeBoardChanges.Add(new SnakeBoardChange(snakeGameController.Snake.GetHead(), SnakeBoardDiffs.SnakeAdded));
-                if (lastSnakePoints[0] != snakeGameController.Snake.History[0]) // If tail changed.
-                    snakeBoardChanges.Add(new SnakeBoardChange(lastSnakePoints[0], SnakeBoardDiffs.SnakeRemoved)); 
+                for (int i = 0; i < LastSnakePoints.Count; i++)
+                {
+                    Point snakePoint = LastSnakePoints[i];
+                    if (!SnakeGameController.Snake.History.Contains(snakePoint))
+                        snakeBoardChanges.Add(new SnakeBoardChange(snakePoint, SnakeBoardDiffs.SnakeRemoved));
+                }
+
+                for (int i = 0; i < SnakeGameController.Snake.History.Count; i++)
+                {
+                    Point snakePoint = SnakeGameController.Snake.History[i];
+                    if (!LastSnakePoints.Contains(snakePoint))
+                        snakeBoardChanges.Add(new SnakeBoardChange(snakePoint, SnakeBoardDiffs.SnakeAdded));
+                }
             }
             else
             {
-                snakeBoardChanges.Add(new SnakeBoardChange(snakeGameController.ApplePoint, SnakeBoardDiffs.AppleAdded));
-                snakeBoardChanges.Add(new SnakeBoardChange(snakeGameController.Snake.GetHead(), SnakeBoardDiffs.SnakeAdded));
+                snakeBoardChanges.Add(new SnakeBoardChange(SnakeGameController.ApplePoint, SnakeBoardDiffs.AppleAdded));
+                snakeBoardChanges.Add(new SnakeBoardChange(SnakeGameController.Snake.GetHead(), SnakeBoardDiffs.SnakeAdded));
             }
             ReadCurrentGameState();
             return snakeBoardChanges;
-        }
-    }
-
-    public struct SnakeBoardChange
-    {
-        public Point Point { get; }
-        public SnakeBoardDiffs SnakeBoardDiff { get; }
-
-        public SnakeBoardChange(Point point, SnakeBoardDiffs snakeBoardDiff)
-        {
-            Point = point;
-            SnakeBoardDiff = snakeBoardDiff;
         }
     }
 }
