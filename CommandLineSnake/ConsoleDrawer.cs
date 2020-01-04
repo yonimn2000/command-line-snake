@@ -4,82 +4,49 @@ using YonatanMankovich.SnakeGameCore;
 
 namespace YonatanMankovich.CommandLineSnake
 {
-    public class ConsoleDrawer
+    public static class ConsoleDrawer
     {
-        public static void DrawBoard(SnakeGameController gameController, Point point, AutoSnakePlayer autoSnakePlayer)
+        public static void DrawBoard(SnakeGameController gameController, SnakeBoardDiff snakeBoardDiff)
         {
             Console.CursorVisible = false;
-            DrawBorder(gameController.BoardSize, point);
+            Console.BackgroundColor = ConsoleColor.Black;
 
-            /*foreach (SnakeBoardChange snakeBoardChange in gameController.SnakeBoardDiff.GetSnakeBoardChanges())
+            foreach (SnakeBoardChange snakeBoardChange in snakeBoardDiff.GetSnakeBoardChanges())
             {
-                Console.SetCursorPosition(point.X * 2 + snakeBoardChange.Point.X * 2 + 2, point.Y + snakeBoardChange.Point.Y + 1);
+                Console.SetCursorPosition(snakeBoardChange.Point.X * 2 + 2, snakeBoardChange.Point.Y + 1);
                 switch (snakeBoardChange.SnakeBoardDiff)
                 {
                     case SnakeBoardDiffs.AppleRemoved:
                     case SnakeBoardDiffs.SnakeRemoved: Draw(Console.BackgroundColor); break;
                     case SnakeBoardDiffs.SnakeAdded: Draw(ConsoleColor.Yellow); break;
-                    case SnakeBoardDiffs.AppleAdded:
-                        Draw(ConsoleColor.Red);
-                        break;
+                    case SnakeBoardDiffs.AppleAdded: Draw(ConsoleColor.Red); break;
                 }
-            }*/
-
-            //------------Temp
-            Console.SetCursorPosition(point.X * 2 + 2, point.Y + 1);
-            for (int y = 0; y <= gameController.BoardSize.Height; y++)
-            {
-                for (int x = 0; x < gameController.BoardSize.Width; x++)
-                    Console.Write("  ");
-                Console.SetCursorPosition(point.X * 2 + 2, point.Y + 1 + y);
             }
-            DrawPathToApple();
-            Console.SetCursorPosition(gameController.ApplePoint.X * 2 +2, gameController.ApplePoint.Y+1);
-            Draw(ConsoleColor.Red);
-            foreach (Point snakePoint in gameController.Snake.History)
-            {
-                Console.SetCursorPosition(snakePoint.X * 2+2, snakePoint.Y+1);
-                Draw(ConsoleColor.Yellow);
-            }
-            //-------------------
-
-            Console.SetCursorPosition(point.X * 2, point.Y + gameController.BoardSize.Height + 2);
-
-            void DrawPathToApple() //TODO: Remove
-            {
-                foreach (Point pathPoint in autoSnakePlayer.Path)
-                {
-                    Console.SetCursorPosition(point.X * 2 + pathPoint.X * 2 + 2, point.Y + pathPoint.Y + 1);
-                    Draw(ConsoleColor.Cyan);
-                }
-                //Console.CursorLeft -= 2;
-            }
+            Console.SetCursorPosition(0, gameController.BoardSize.Height + 2); // For writing text to the console.
         }
 
-        public static void DrawBorder(Size boardSize, Point point)
+        public static void DrawBorder(Size boardSize)
         {
-            Point cursorStart = new Point(Console.CursorLeft, Console.CursorTop);
-            Console.SetCursorPosition(point.X * 2, point.Y);
+            Console.SetCursorPosition(0, 0);
             ConsoleColor prevColor = Console.BackgroundColor;
             Console.BackgroundColor = ConsoleColor.DarkGray;
 
-            for (int x = point.X; x < point.X + boardSize.Width + 2; x++)
+            for (int x = 0; x < boardSize.Width + 2; x++)
                 Console.Write("  ");
 
-            Console.SetCursorPosition(point.X * 2, point.Y + boardSize.Height + 1);
-            for (int x = point.X; x < point.X + boardSize.Width + 2; x++)
+            Console.SetCursorPosition(0, boardSize.Height + 1);
+            for (int x = 0; x < boardSize.Width + 2; x++)
                 Console.Write("  ");
 
-            for (int y = point.Y + 1; y < point.Y + boardSize.Height + 1; y++)
+            for (int y = 1; y < boardSize.Height + 1; y++)
             {
-                Console.SetCursorPosition(point.X * 2, y);
+                Console.SetCursorPosition(0, y);
                 Console.Write("  ");
-                Console.SetCursorPosition(point.X * 2 + boardSize.Width * 2 + 2, y);
+                Console.SetCursorPosition(boardSize.Width * 2 + 2, y);
                 Console.Write("  ");
             }
 
             Console.BackgroundColor = prevColor;
-            Console.SetCursorPosition(cursorStart.X, cursorStart.Y);
         }
 
         private static void Draw(ConsoleColor consoleColor)
