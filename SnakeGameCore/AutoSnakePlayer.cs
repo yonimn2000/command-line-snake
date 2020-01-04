@@ -52,23 +52,43 @@ namespace YonatanMankovich.SnakeGameCore
             return GetNextRandomPossibleDirection(); // If could not calculate path...
         }
 
+        /*public Directions GetNextPossibleDirection()
+        {
+            // Always turn right.
+            List<Directions> nextPossibleDirections = GetNextPossibleDirections();
+            Directions currentDirection = SnakeGameController.Snake.Direction;
+            if (!nextPossibleDirections.Contains(currentDirection))
+                switch (currentDirection)
+                {
+                    case Directions.Up: return nextPossibleDirections.Contains(Directions.Right) ? Directions.Right : Directions.Left;
+                    case Directions.Right: return nextPossibleDirections.Contains(Directions.Down) ? Directions.Down : Directions.Up;
+                    case Directions.Down: return nextPossibleDirections.Contains(Directions.Left) ? Directions.Left : Directions.Right;
+                    case Directions.Left: return nextPossibleDirections.Contains(Directions.Up) ? Directions.Up : Directions.Down;
+                }
+            return currentDirection; // Continue in the same direction.
+        }*/
+
         public Directions GetNextRandomPossibleDirection()
         {
-            List<Directions> nextPossibleDirections = new List<Directions>(4);
-            Point snakeHead = SnakeGameController.Snake.GetHead();
-
-            if (IsPossibleNextPoint(new Point(snakeHead.X, snakeHead.Y - 1)))
-                nextPossibleDirections.Add(Directions.Up);
-            if (IsPossibleNextPoint(new Point(snakeHead.X, snakeHead.Y + 1)))
-                nextPossibleDirections.Add(Directions.Down);
-            if (IsPossibleNextPoint(new Point(snakeHead.X + 1, snakeHead.Y)))
-                nextPossibleDirections.Add(Directions.Right);
-            if (IsPossibleNextPoint(new Point(snakeHead.X - 1, snakeHead.Y)))
-                nextPossibleDirections.Add(Directions.Left);
-
+            List<Directions> nextPossibleDirections = GetNextPossibleDirections();
             if (nextPossibleDirections.Count > 0)
                 return nextPossibleDirections[new Random().Next(nextPossibleDirections.Count)];
             return SnakeGameController.Snake.Direction; // Continue in the same direction (give up).
+        }
+
+        private List<Directions> GetNextPossibleDirections()
+        {
+            List<Directions> nextPossibleDirections = new List<Directions>(4);
+            Point snakeHead = SnakeGameController.Snake.GetHead();
+            if (IsPossibleNextPoint(new Point(snakeHead.X, snakeHead.Y - 1)))
+                nextPossibleDirections.Add(Directions.Up);
+            if (IsPossibleNextPoint(new Point(snakeHead.X + 1, snakeHead.Y)))
+                nextPossibleDirections.Add(Directions.Right);
+            if (IsPossibleNextPoint(new Point(snakeHead.X, snakeHead.Y + 1)))
+                nextPossibleDirections.Add(Directions.Down);
+            if (IsPossibleNextPoint(new Point(snakeHead.X - 1, snakeHead.Y)))
+                nextPossibleDirections.Add(Directions.Left);
+            return nextPossibleDirections;
         }
 
         private bool IsPossibleNextPoint(Point point)

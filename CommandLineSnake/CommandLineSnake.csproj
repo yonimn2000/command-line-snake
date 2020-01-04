@@ -47,9 +47,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConsoleDrawer.cs" />
+    <Compile Include="SnakeConsoleDrawer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SnakePlayer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

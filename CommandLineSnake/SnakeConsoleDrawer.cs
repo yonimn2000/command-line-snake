@@ -4,7 +4,7 @@ using YonatanMankovich.SnakeGameCore;
 
 namespace YonatanMankovich.CommandLineSnake
 {
-    public static class ConsoleDrawer
+    public static class SnakeConsoleDrawer
     {
         public static void DrawBoard(SnakeGameController gameController, SnakeBoardDiff snakeBoardDiff)
         {

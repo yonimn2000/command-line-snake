@@ -38,19 +38,13 @@ namespace YonatanMankovich.SnakeGameCore
                     snakeBoardChanges.Add(new SnakeBoardChange(LastApplePoint, SnakeBoardDiffs.AppleRemoved));
                     snakeBoardChanges.Add(new SnakeBoardChange(SnakeGameController.ApplePoint, SnakeBoardDiffs.AppleAdded));
                 }
-                for (int i = 0; i < LastSnakePoints.Count; i++)
-                {
-                    Point snakePoint = LastSnakePoints[i];
+                foreach (Point snakePoint in LastSnakePoints.ToArray())
                     if (!SnakeGameController.Snake.History.Contains(snakePoint))
                         snakeBoardChanges.Add(new SnakeBoardChange(snakePoint, SnakeBoardDiffs.SnakeRemoved));
-                }
 
-                for (int i = 0; i < SnakeGameController.Snake.History.Count; i++)
-                {
-                    Point snakePoint = SnakeGameController.Snake.History[i];
+                foreach (Point snakePoint in SnakeGameController.Snake.History.ToArray())
                     if (!LastSnakePoints.Contains(snakePoint))
                         snakeBoardChanges.Add(new SnakeBoardChange(snakePoint, SnakeBoardDiffs.SnakeAdded));
-                }
             }
             else
             {

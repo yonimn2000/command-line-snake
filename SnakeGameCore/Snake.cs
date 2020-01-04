@@ -36,7 +36,7 @@ namespace YonatanMankovich.SnakeGameCore
 
         public bool IsPointOnSnake(Point point)
         {
-            foreach (Point snakePoint in History)
+            foreach (Point snakePoint in History.ToArray())
                 if (snakePoint == point)
                     return true;
             return false;
