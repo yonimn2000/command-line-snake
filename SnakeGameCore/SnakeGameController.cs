@@ -9,13 +9,19 @@ namespace YonatanMankovich.SnakeGameCore
         public Size BoardSize { get; set; }
         public Snake Snake { get; private set; }
         public Point ApplePoint { get; private set; }
-        public SnakeBoardDiff SnakeBoardDiff { get; }
         public bool IsGamePaused { get; private set; } = false;
-
-        public double Interval
+        public int Speed
         {
-            get => timer.Interval;
-            set => timer.Interval = value;
+            get => (int)Math.Round(1000 / timer.Interval);
+            set
+            {
+                double newInterval = 1000.0 / value;
+                if (newInterval < 10)
+                    newInterval = 10;
+                if (newInterval > 1000)
+                    newInterval = 1000;
+                timer.Interval = newInterval;
+            }
         }
 
         private readonly Random random = new Random();
@@ -34,9 +40,7 @@ namespace YonatanMankovich.SnakeGameCore
             Snake = new Snake(new Point(random.Next(BoardSize.Width), random.Next(BoardSize.Height)),
                             (Directions)random.Next(Enum.GetNames(typeof(Directions)).Length));
             nextSnakeDirection = Snake.Direction;
-            SnakeBoardDiff = new SnakeBoardDiff(this);
             CreateAppleOnBoard();
-
             timer.Elapsed += TimerTick;
         }
 
@@ -115,21 +119,11 @@ namespace YonatanMankovich.SnakeGameCore
         public void EndGame()
         {
             timer.Stop();
-            SnakeBoardDiff.Reset();
         }
 
         public bool IsPointOutOfBounds(Point point)
         {
             return point.X < 0 || point.Y < 0 || point.X >= BoardSize.Width || point.Y >= BoardSize.Height;
-        }
-    }
-
-    public class StepMadeEventArgs : EventArgs
-    {
-        public StepMadeKinds StepMadeKind { get; }
-        public StepMadeEventArgs(StepMadeKinds stepMadeKind)
-        {
-            StepMadeKind = stepMadeKind;
         }
     }
 }
