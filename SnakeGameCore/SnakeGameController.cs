@@ -29,7 +29,7 @@ namespace YonatanMankovich.SnakeGameCore
         private Directions nextSnakeDirection;
 
         public BeforeStepMade BeforeStepMadeDelegate;
-        public AfterStepMade OnStepMade;
+        public AfterStepMade AfterStepMadeDelegate;
 
         public delegate void BeforeStepMade();
         public delegate void AfterStepMade(StepMadeKinds stepMadeKind);
@@ -113,7 +113,7 @@ namespace YonatanMankovich.SnakeGameCore
             }
             else
                 Snake.History.RemoveAt(0);
-            OnStepMade?.Invoke(stepMadeKind);
+            AfterStepMadeDelegate?.Invoke(stepMadeKind);
         }
 
         public void EndGame()

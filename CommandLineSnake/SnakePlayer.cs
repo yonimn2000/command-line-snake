@@ -34,7 +34,7 @@ namespace YonatanMankovich.CommandLineSnake
             //gameController = new SnakeGameController(new Size(10, 10));
             autoSnakePlayer = new AutoSnakePlayer(gameController);
             snakeBoardDiff = new SnakeBoardDiff(gameController);
-            gameController.OnStepMade += GameController_AfterStepMade;
+            gameController.AfterStepMadeDelegate += GameController_AfterStepMade;
             gameController.BeforeStepMadeDelegate += GameController_BeforeStepMade;
             if (IsAutoSnakePlayer && prevAutoSpeed > 0)
                 gameController.Speed = prevAutoSpeed;
