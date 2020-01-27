@@ -8,6 +8,8 @@ A simple command line Snake game with both manual and automatic players.
 
 [YonatanMankovich.SimpleConsoleMenus](https://github.com/yonimn2000/simple-console-menus)
 
-## Screenshot
+## Gameplay
 
-![screenshot](media/screenshot.png)
+The auto game player calculates the path to the apple using A* path finding and moves accordingly:
+
+![Screenshots](media/screenshots.gif)
